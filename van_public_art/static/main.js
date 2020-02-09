@@ -1,90 +1,96 @@
-var getData = async function(path){
-    return await fetch(path)
-    .then((response) => {
-        if(!response.ok) {
-            throw new Error(`not ok: error fetching ${path}`);
-        }
-        return response.json();
-    }).catch((error) => {
-        console.log(error);
-    });
-}
+'use-strict';
 
-var getArtists = async function() {
-    return await getData('/artists');
-}
-
-var updateTableHeader = function(headerList) {
-    $('#mainTableHead').html(
-        `<tr>
-        </tr>`
+var addTableHeader = function (tableId, headerList) {
+    $(`#${tableId}`).append(
+        $('<thead>').append(
+            '<tr/>')
     );
     headerList.forEach(header => {
-        $('#mainTableHead tr').append(
-            `<th>${header}</th>`
+        $(`#${tableId} thead tr`).append(
+            `<th>${header["data"].replace(/^\w/, c => c.toUpperCase())}</th>`
         )
     })
 };
 
-var setTableType = function(tableType){
-    $('#mainTable').data('tableType', tableType);
+var getDataTableSettings = function (apiUrl, columns) {
+    return {
+        "processing": true,
+        "serverSide": true,
+        "ajax": apiUrl,
+        "columns": columns,
+        "paging": true,
+        "pagingType": "simple_numbers",
+        "retrieve": true
+    };
 }
-    
-var displayArtistsTable = async function() {
-    var tableType = 'artists';
-    if($('#mainTable').data('tableType') === tableType) return; 
-    var artists = await getArtists();
-    updateTableHeader(['Name', 'Info']);
-    $('#mainTableBody').empty();
-    if(!artists) return;
-    $('#mainTableBody').html('');
-    artists.forEach(artist => {
-        $('#mainTableBody').append(
-            `<tr> 
-                <td>${artist.name}</td>
-                <td>${artist.info}</td>
-            </tr>`
+
+var tableType;
+var _displayTable = function (apiUrl, columns) {
+    if ($(`#${tableType}Table`).data('tableType') === tableType) return;
+    var table = $(`#${tableType}Table`).DataTable(getDataTableSettings(apiUrl, columns));
+    table.page(0).draw('page');
+}
+
+var columns = {
+    "artists": [
+        { "data": "name" },
+        { "data": "info" }
+    ]
+    ,
+    "artwork": [
+        { "data": "title" },
+        { "data": "address" },
+        { "data": "neighbourhood" },
+        { "data": "info" }
+    ]
+};
+
+var _displayNeighhourhoodTable = function (neighbourhood) {
+    if (!$(`#${neighbourhood}Table`).length) {
+        $('#neighbourhoodTables').append(
+            $('<div/>')
+                .attr("id", `${neighbourhood}TableAll`)
+                .addClass("table-responsive")
+                .append(
+                    $('<table/>')
+                        .attr("id", `${neighbourhood}Table`)
+                        .addClass("table table-striped table-sm")
+                )
         );
-    });
-    setTableType(tableType);
+        addTableHeader(`${neighbourhood}Table`, columns["artwork"]);
+    }
+    _displayTable(`/datatable/${neighbourhood}`, columns["artwork"])
+}
+var displayArtworkByNeighbourhood = function (neighbourhood) {
+    $(`#${tableType}TableAll`).hide();
+    tableType = neighbourhood.replace(/ /g, '');
+    _displayNeighhourhoodTable(tableType);
+    $(`#${tableType}TableAll`).show();
 }
 
-var getAllArtwork= async function() {
-    return await getData('/artwork');
-}
+$(function () {
+    addTableHeader('artistsTable', columns["artists"]);
+    addTableHeader('artworkTable', columns["artwork"]);
 
-var displayArtworkTable = async function(artwork) {
-    updateTableHeader(['Title', 'Address', 'Neighbourhood', 'Info']);
-    $('#mainTableBody').empty();
-    if(!artwork) return;
-    artwork.forEach(artItem => {
-        $('#mainTableBody').append(
-            `<tr> 
-                <td>${artItem.title}</td>
-                <td>${artItem.address}</td>
-                <td>${artItem.neighbourhood}</td>
-                <td>${artItem.info}</td>
-            </tr>`
-        );
-    });
-}
+    $('#artistsTableAll').hide();
+    $('#artworkTableAll').hide();
 
-var displayAllArtworkTable = async function() {
-    var tableType = 'artwork';
-    if($('#mainTable').data('tableType') === tableType) return;
-    var artwork = await getAllArtwork();
-    displayArtworkTable(artwork);
-    setTableType(tableType);
-}
+    $('#artistsLink').on('click', function () {
+        $(`#${tableType}TableAll`).hide();
+        tableType = "artists";
+        _displayTable(`/datatable/${tableType}`, columns["artists"]);
+        $(`#${tableType}TableAll`).show();
+    })
 
-var getArtworkByNeighbourhood = async function(neighbourhood) {
-    return await getData(`/artwork/${neighbourhood}`);
-}
-    
-var displayArtworkByNeighbourhood = async function(neighbourhood) {
-    var tableType = `${neighbourhood}Artwork`;
-    if($('#mainTable').data('tableType') === tableType) return;
-    var artwork = await getArtworkByNeighbourhood(neighbourhood);
-    displayArtworkTable(artwork);
-    setTableType(tableType);
-}
+    $('#artworkLink').on('click', function () {
+        $(`#${tableType}TableAll`).hide();
+        tableType = "artwork";
+        _displayTable(`/datatable/${tableType}`, columns["artwork"]);
+        $(`#${tableType}TableAll`).show();
+    })
+
+    $('.nav-link').on('click', function() {
+        $('.nav-link').removeClass('active');
+        $(this).addClass('active');
+    })
+});

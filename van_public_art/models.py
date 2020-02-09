@@ -27,4 +27,11 @@ class Artwork(db.Model):
         self.address = address
         self.neighbourhood = neighbourhood
         self.description = description
-        
+
+    def get_neighbourhoods():
+        return (
+            db.session.query(Artwork.neighbourhood)
+            .group_by(Artwork.neighbourhood)
+            .having(Artwork.neighbourhood != None)
+            .order_by(Artwork.neighbourhood.asc())
+            )
