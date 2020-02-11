@@ -4,6 +4,8 @@ from van_public_art import app
 from van_public_art.services import (
     ArtistService, ArtworkService, NeighbourhoodArtworkService
     )
+
+    
 @app.route('/')
 def template():
     neighbourhoods = NeighbourhoodArtworkService.get_neighbourhoods()
@@ -26,11 +28,17 @@ def datatable_neighbourhood_artwork(neighbourhood):
         requestArgs, NeighbourhoodArtworkService(neighbourhood))
 
 def _form_datatable_response(requestArgs, publicArtService):
-    startItem = requestArgs.get('start', 0, type=int)
-    pageLength = requestArgs.get('length', 30, type=int)
+    start_item = requestArgs.get('start', 0, type=int)
+    page_length = requestArgs.get('length', 30, type=int)
     draw = requestArgs.get('draw', 0, type=int)
-    count = publicArtService.get_all_items_count()
-    data = publicArtService.get_items_by_page(startItem, pageLength)
+    search_value = requestArgs.get('search[value]', None, type=str)
+    if(search_value):
+        count = publicArtService.get_filtered_items_count(search_value)
+        data = publicArtService.get_filtered_items_by_page(
+            search_value, start_item, page_length)
+    else:
+        count = publicArtService.get_all_items_count()
+        data = publicArtService.get_items_by_page(start_item, page_length)
     result = {
         "draw": draw,
         "recordsTotal": count,

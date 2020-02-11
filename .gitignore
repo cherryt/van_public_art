@@ -57,3 +57,4 @@ instance/
 venv/
 venv.bak/
 .vscode/
+.env

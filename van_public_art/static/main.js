@@ -46,25 +46,26 @@ var columns = {
 };
 
 var _displayNeighhourhoodTable = function (neighbourhood) {
-    if (!$(`#${neighbourhood}Table`).length) {
+    var id = `${neighbourhood.replace(/ /g, '')}Table`;
+    if (!$(`#${id}All`).length) {
         $('#neighbourhoodTables').append(
             $('<div/>')
-                .attr("id", `${neighbourhood}TableAll`)
+                .attr("id", `${id}All`)
                 .addClass("table-responsive")
                 .append(
                     $('<table/>')
-                        .attr("id", `${neighbourhood}Table`)
+                        .attr("id", `${id}`)
                         .addClass("table table-striped table-sm")
                 )
         );
-        addTableHeader(`${neighbourhood}Table`, columns["artwork"]);
+        addTableHeader(id, columns["artwork"]);
     }
     _displayTable(`/datatable/${neighbourhood}`, columns["artwork"])
 }
 var displayArtworkByNeighbourhood = function (neighbourhood) {
     $(`#${tableType}TableAll`).hide();
     tableType = neighbourhood.replace(/ /g, '');
-    _displayNeighhourhoodTable(tableType);
+    _displayNeighhourhoodTable(neighbourhood);
     $(`#${tableType}TableAll`).show();
 }
 
