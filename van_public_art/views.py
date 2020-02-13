@@ -2,47 +2,53 @@ from flask import render_template, request, jsonify
 
 from van_public_art import app
 from van_public_art.services import (
-    ArtistService, ArtworkService, NeighbourhoodArtworkService
-    )
+    ArtistService,
+    ArtworkService,
+    NeighbourhoodArtworkService,
+)
 
-    
-@app.route('/')
+
+@app.route("/")
 def template():
     neighbourhoods = NeighbourhoodArtworkService.get_neighbourhoods()
-    return render_template('main.html', neighbourhoods=neighbourhoods)
+    return render_template("main.html", neighbourhoods=neighbourhoods)
 
-@app.route('/datatable/artwork', methods=['GET', 'POST'])
+
+@app.route("/datatable/artwork", methods=["GET", "POST"])
 def datatable_artwork():
-    requestArgs = request.args
-    return _form_datatable_response(requestArgs, ArtworkService())
+    request_args = request.args
+    return _form_datatable_response(request_args, ArtworkService())
 
-@app.route('/datatable/artists', methods=['GET', 'POST'])
+
+@app.route("/datatable/artists", methods=["GET", "POST"])
 def datatable_artists():
-    requestArgs = request.args
-    return _form_datatable_response(requestArgs, ArtistService())
+    request_args = request.args
+    return _form_datatable_response(request_args, ArtistService())
 
-@app.route('/datatable/<neighbourhood>', methods=['GET', 'POST'])
+
+@app.route("/datatable/<neighbourhood>", methods=["GET", "POST"])
 def datatable_neighbourhood_artwork(neighbourhood):
-    requestArgs = request.args
+    request_args = request.args
     return _form_datatable_response(
-        requestArgs, NeighbourhoodArtworkService(neighbourhood))
+        request_args, NeighbourhoodArtworkService(neighbourhood)
+    )
 
-def _form_datatable_response(requestArgs, publicArtService):
-    start_item = requestArgs.get('start', 0, type=int)
-    page_length = requestArgs.get('length', 30, type=int)
-    draw = requestArgs.get('draw', 0, type=int)
-    search_value = requestArgs.get('search[value]', None, type=str)
-    if(search_value):
-        count = publicArtService.get_filtered_items_count(search_value)
-        data = publicArtService.get_filtered_items_by_page(
-            search_value, start_item, page_length)
+
+def _form_datatable_response(request_args, service):
+    start_item = request_args.get("start", 0, type=int)
+    page_length = request_args.get("length", 30, type=int)
+    draw = request_args.get("draw", 0, type=int)
+    search_value = request_args.get("search[value]", None, type=str)
+    if search_value:
+        count = service.get_filtered_items_count(search_value)
+        data = service.get_filtered_items_by_page(search_value, start_item, page_length)
     else:
-        count = publicArtService.get_all_items_count()
-        data = publicArtService.get_items_by_page(start_item, page_length)
+        count = service.get_all_items_count()
+        data = service.get_items_by_page(start_item, page_length)
     result = {
         "draw": draw,
         "recordsTotal": count,
         "recordsFiltered": count,
-        "data": data
+        "data": data,
     }
     return jsonify(result)

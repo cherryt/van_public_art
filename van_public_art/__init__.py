@@ -10,4 +10,4 @@ load_dotenv()
 app.config.from_object(Config)
 db = SQLAlchemy(app)
 
-import van_public_art.views
+import van_public_art.views  # noqa

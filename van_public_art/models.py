@@ -1,10 +1,10 @@
 from van_public_art import db
-import pytest
+
 
 class Artist(db.Model):
-    __tablename__ = 'artist'
+    __tablename__ = "artist"
 
-    id=db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String())
     last_name = db.Column(db.String())
     biography = db.Column(db.String())
@@ -14,10 +14,11 @@ class Artist(db.Model):
         self.last_name = last_name
         self.biography = biography
 
-class Artwork(db.Model):
-    __tablename__ = 'artwork'
 
-    id=db.Column(db.Integer, primary_key=True)
+class Artwork(db.Model):
+    __tablename__ = "artwork"
+
+    id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String())
     address = db.Column(db.String())
     neighbourhood = db.Column(db.String())
@@ -34,6 +35,6 @@ class Artwork(db.Model):
         return (
             db.session.query(Artwork.neighbourhood)
             .group_by(Artwork.neighbourhood)
-            .having(Artwork.neighbourhood != None)
+            .having(Artwork.neighbourhood is not None)
             .order_by(Artwork.neighbourhood.asc())
-            )
+        )
