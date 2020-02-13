@@ -1,4 +1,5 @@
 from van_public_art import db
+import pytest
 
 class Artist(db.Model):
     __tablename__ = 'artist'
@@ -22,7 +23,8 @@ class Artwork(db.Model):
     neighbourhood = db.Column(db.String())
     description = db.Column(db.String())
 
-    def __init__(self, id, title, address, neighbourhood, info):
+    def __init__(self, id, title, address, neighbourhood, description):
+        self.id = id
         self.title = title
         self.address = address
         self.neighbourhood = neighbourhood
