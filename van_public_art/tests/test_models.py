@@ -1,7 +1,8 @@
 from unittest import mock
 
-from van_public_art.models import Artwork
 from van_public_art import db
+from van_public_art.models import Artwork
+
 
 
 class TestModels:

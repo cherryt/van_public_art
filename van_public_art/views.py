@@ -11,21 +11,18 @@ def template():
     neighbourhoods = NeighbourhoodArtworkService.get_neighbourhoods()
     return render_template('main.html', neighbourhoods=neighbourhoods)
 
-@app.route('/datatable/artwork', methods=['GET', 'POST'])
-def datatable_artwork():
-    requestArgs = request.args
-    return _form_datatable_response(requestArgs, ArtworkService())
-
 @app.route('/datatable/artists', methods=['GET', 'POST'])
 def datatable_artists():
-    requestArgs = request.args
-    return _form_datatable_response(requestArgs, ArtistService())
+    return _form_datatable_response(request.args, ArtistService())
+
+@app.route('/datatable/artwork', methods=['GET', 'POST'])
+def datatable_artwork():
+    return _form_datatable_response(request.args, ArtworkService())
 
 @app.route('/datatable/<neighbourhood>', methods=['GET', 'POST'])
 def datatable_neighbourhood_artwork(neighbourhood):
-    requestArgs = request.args
     return _form_datatable_response(
-        requestArgs, NeighbourhoodArtworkService(neighbourhood))
+        request.args, NeighbourhoodArtworkService(neighbourhood))
 
 def _form_datatable_response(requestArgs, publicArtService):
     start_item = requestArgs.get('start', 0, type=int)

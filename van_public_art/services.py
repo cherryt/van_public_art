@@ -27,13 +27,19 @@ class PublicArtService(ABC):
     def _filter_by_search(search_value):
         pass
 
+    def _get_page(start_item, page_length):
+        if(page_length < 1):
+             raise ZeroDivisionError("page_length cannot be 0")
+        return (start_item/page_length)+1
+
+
 class ArtistService(PublicArtService):
 
     def get_all_items_count(self):
         return Artist.query.count()
 
     def get_items_by_page(self, start_item, page_length):
-        page = (start_item/page_length)+1
+        page = PublicArtService._get_page(start_item, page_length)
         artists = Artist.query.paginate(
             page, page_length, False).items
         return ArtistService._form_results(artists)
@@ -44,7 +50,7 @@ class ArtistService(PublicArtService):
             ).count()
 
     def get_filtered_items_by_page(self, search_value, start_item, page_length):
-        page = (start_item/page_length)+1
+        page = PublicArtService._get_page(start_item, page_length)
         artists = Artist.query.filter(
             ArtistService._filter_by_search(search_value)
             ).paginate(
@@ -75,7 +81,7 @@ class ArtworkService(PublicArtService):
         return Artwork.query.count()
     
     def get_items_by_page(self, start_item, page_length):
-        page = (start_item/page_length)+1
+        page = PublicArtService._get_page(start_item, page_length)
         artwork = Artwork.query.paginate(
             page, page_length, False).items
         return ArtworkService._form_results(artwork)
@@ -86,7 +92,7 @@ class ArtworkService(PublicArtService):
             ).count()
 
     def get_filtered_items_by_page(self, search_value, start_item, page_length):
-        page = (start_item/page_length)+1
+        page = PublicArtService._get_page(start_item, page_length)
         artwork = Artwork.query.filter(
             ArtworkService._filter_by_search(search_value)
             ).paginate(
@@ -125,7 +131,7 @@ class NeighbourhoodArtworkService(ArtworkService):
         return Artwork.query.filter(Artwork.neighbourhood == self.neighbourhood).count()
     
     def get_items_by_page(self, start_item, page_length):
-        page = (start_item/page_length)+1
+        page = PublicArtService._get_page(start_item, page_length)
         artwork = Artwork.query.filter(
             Artwork.neighbourhood == self.neighbourhood).paginate(
                 page, page_length, False).items
@@ -143,7 +149,7 @@ class NeighbourhoodArtworkService(ArtworkService):
                 )).count()
 
     def get_filtered_items_by_page(self, search_value, start_item, page_length):
-        page = (start_item/page_length)+1
+        page = PublicArtService._get_page(start_item, page_length)
         artwork = Artwork.query.filter(
             Artwork.neighbourhood == self.neighbourhood
             ).filter(
