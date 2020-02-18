@@ -4,27 +4,27 @@ This is a project which utilizes the data catalogue of artwork found in public a
 
 ## Running the Project
 
-Create and activate the virtual environment
+Create and activate the virtual environment:
 
 ```bash
 $ virtualenv venv
 $ source venv/script/activate
 ```
 
-Install Python dependencies
+Install Python dependencies:
 
 ```bash
 $ pip install -r requirements.txt
 ```
 
-Navigate to '/static' and install JavaScript dependencies
+Navigate to '/static' and install JavaScript dependencies:
 
 ```bash
 cd van_public_art/static
 npm install
 ```
 
-Environment variables for database connection should be set in the .env file. Once this is done, navigate back to the root and run the project 
+Environment variables for database connection should be set in the .env file. Once this is done, navigate back to the root and run the project: 
 
 
 ```bash
@@ -33,9 +33,10 @@ $ python run.py
 
 ## Running Tests
 
-Install testing dependencies and run tests
+Test environment variables can be set in pytest.ini.
+Install testing dependencies and run tests:
 ```bash
 $ pip install -r test-requirements.txt
 
-$ pytest
+$ pytest /van_public_art/tests
 ```
