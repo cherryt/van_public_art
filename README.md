@@ -34,9 +34,9 @@ $ python run.py
 ## Running Tests
 
 Test environment variables can be set in pytest.ini.
-Install testing dependencies and run tests:
+Install testing dependencies and run all tests:
 ```bash
 $ pip install -r test-requirements.txt
 
-$ pytest /van_public_art/tests
+$ pytest
 ```
